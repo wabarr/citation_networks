@@ -1,0 +1,18 @@
+{% extends "citation_networks/base.html" %}
+
+{% block content %}
+<div class="container">
+<h4>Papers citing {{ object }}, last queried {{ object.citations_last_queried }}</h4>
+    <div class="row">
+            {% for citation in object.cited_by.all %}
+             <div class="col-lg-4">
+                <div class="card">
+                <div class="card-body">
+                    <div class="card-title"><a href="{%  url 'paper-detail' citation.id %}">{{ citation }}</a></div>
+                </div>
+                </div>
+            </div>
+            {% endfor %}
+    </div>
+</div>
+{% endblock %}
