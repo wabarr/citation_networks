@@ -2,6 +2,16 @@
 
 {% block content %}
 <div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title"><h4>{{ object }}</h4></div>
+                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
+            </div>
+        </div>
+        </div>
+    </div>
     {% if object.citations_last_queried == None %}
         <div class="row">
         <h4>{{ object }} - never queried</h4>
@@ -13,7 +23,7 @@
     {% else %}
     <div class="row">
         <div class="col-lg-12">
-            <h4>{{ object.cited_by.all | length }} papers cite {{ object }}, last queried {{ object.citations_last_queried }}</h4>
+            <h4>{{ object.cited_by.all | length }} citations, last queried {{ object.citations_last_queried }}</h4>
         </div>
     </div>
     <div class="row">
