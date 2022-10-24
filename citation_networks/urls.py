@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from citation_networks.views import PaperListView, PaperDetailView
+from citation_networks.views import PaperListView, PaperDetailView, ImportCitationsFormView, AuthorDetailView
 
 urlpatterns = [
     path('', PaperListView.as_view()),
     path('admin/', admin.site.urls),
     path('papers/', PaperListView.as_view()),
-    path('papers/<pk>', PaperDetailView.as_view(), name="paper-detail")
+    path('papers/<pk>', PaperDetailView.as_view(), name="paper-detail"),
+    path('authors/<pk>', AuthorDetailView.as_view(), name="author-detail"),
+    path('import-citations/', ImportCitationsFormView.as_view())
 ]

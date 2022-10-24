@@ -2,9 +2,23 @@
 
 {% block content %}
 <div class="container">
-<h4>Papers citing {{ object }}, last queried {{ object.citations_last_queried }}</h4>
+    {% if object.citations_last_queried == None %}
+        <div class="row">
+        <h4>{{ object }} - never queried</h4>
+
+            <p>This paper was imported as a citation or a reference to another paper. We don't know anything about its citations or references. If you want to query Semantic Scholar to get {{ object }}'s references and citations, you can!</p>
+            <p>Semantic Scholar Paper ID: {{ object.SSID_paper_ID }}</p>
+        </div>
+
+    {% else %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>{{ object.cited_by.all | length }} papers cite {{ object }}, last queried {{ object.citations_last_queried }}</h4>
+        </div>
+    </div>
     <div class="row">
             {% for citation in object.cited_by.all %}
+
              <div class="col-lg-4">
                 <div class="card">
                 <div class="card-body">
@@ -12,7 +26,32 @@
                 </div>
                 </div>
             </div>
+            {% if forloop.counter|divisibleby:3 %}
+                </div><div class="row">
+            {% endif %}
             {% endfor %}
     </div>
+<div class="row">
+    <div class="col-lg-12">
+        <h4>{{ object }} cites {{ object.references.all | length }} papers</h4>
+    </div>
+</div>
+
+    <div class="row">
+            {% for reference in object.references.all %}
+             <div class="col-lg-4">
+                <div class="card">
+                <div class="card-body">
+                    <div class="card-title"><a href="{%  url 'paper-detail' reference.id %}">{{ reference }}</a></div>
+                </div>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 %}
+                </div><div class="row">
+            {% endif %}
+            {% endfor %}
+    </div>
+</div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,24 @@
+{% extends "citation_networks/base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h4>Papers by {{ object }}</h4>
+    <div class="row">
+            {% for authorship in object.authorship_set.all %}
+
+             <div class="col-lg-4">
+                <div class="card">
+                <div class="card-body">
+                    <div class="card-title"><a href="{%  url 'paper-detail' authorship.paper.id %}">{{ authorship.paper }}</a></div>
+                </div>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 %}
+                </div><div class="row">
+            {% endif %}
+            {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

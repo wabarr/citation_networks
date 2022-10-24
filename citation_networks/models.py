@@ -11,13 +11,14 @@ class Author(models.Model):
             return("error in __str__")
 
 class Paper(models.Model):
-    SSID_paper_ID = models.CharField(max_length=1000, unique=True)
+    SSID_paper_ID = models.CharField(max_length=1000, unique=True, null=True)
     title = models.CharField(max_length=1000,null=True)
     journal = models.CharField(max_length=1000, null=True)
     authors = models.ManyToManyField(Author, through='Authorship')
     year = models.IntegerField(null=True)
     abstract = models.TextField(null=True, blank=True)
-    cited_by = models.ManyToManyField('Paper', blank=True)
+    references = models.ManyToManyField('Paper', blank=True, related_name="refs")
+    cited_by = models.ManyToManyField('Paper', blank=True, related_name="cites")
     citations_last_queried = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
