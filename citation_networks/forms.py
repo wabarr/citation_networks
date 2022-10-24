@@ -58,14 +58,60 @@ class ImportCitations(forms.Form):
             thePaperJSON = paper_response_from_SS_API.json
             thePaperObject, created = Paper.objects.get_or_create(SSID_paper_ID=thePaperJSON["paperId"])
             thePaperObject.title=thePaperJSON["title"]
-            thePaperObject.journal=thePaperJSON["journal"]
+            try:
+                thePaperObject.journal_name = thePaperJSON["journal"]["name"]
+            except KeyError:
+                pass
+            except TypeError:
+                pass
+            try:
+                thePaperObject.volume = thePaperJSON["journal"]["volume"]
+            except KeyError:
+                pass
+            except TypeError:
+                pass
+            try:
+                thePaperObject.issue = thePaperJSON["journal"]["issue"]
+            except KeyError:
+                pass
+            except TypeError:
+                pass
+            try:
+                thePaperObject.pages = thePaperJSON["journal"]["pages"]
+            except KeyError:
+                pass
+            except TypeError:
+                pass
             thePaperObject.year=thePaperJSON["year"]
             thePaperObject.save()
             addAuthors(thePaperObject, thePaperJSON["authors"])
             for citation in thePaperJSON["citations"]:
                 citing_paper, created = Paper.objects.get_or_create(SSID_paper_ID=citation["paperId"])
-                citing_paper.title=citation["title"]
-                citing_paper.journal=citation["journal"]
+                citing_paper.title = citation["title"]
+                try:
+                    citing_paper.journal_name = citation["journal"]["name"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    citing_paper.volume = citation["journal"]["volume"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    citing_paper.issue = citation["journal"]["issue"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    citing_paper.pages = citation["journal"]["pages"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
                 citing_paper.year=citation["year"]
                 citing_paper.save()
                 addAuthors(citing_paper, citation["authors"])
@@ -74,8 +120,31 @@ class ImportCitations(forms.Form):
                 thePaperObject.save()
             for reference in thePaperJSON["references"]:
                 referring_paper, created = Paper.objects.get_or_create(SSID_paper_ID=reference["paperId"])
-                referring_paper.title=reference["title"]
-                referring_paper.journal=reference["journal"]
+                referring_paper.title = reference["title"]
+                try:
+                    referring_paper.journal_name = reference["journal"]["name"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    referring_paper.volume = reference["journal"]["volume"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    referring_paper.issue = reference["journal"]["issue"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    referring_paper.pages = reference["journal"]["pages"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
                 referring_paper.year=reference["year"]
                 referring_paper.save()
                 addAuthors(referring_paper, reference["authors"])

@@ -13,7 +13,10 @@ class Author(models.Model):
 class Paper(models.Model):
     SSID_paper_ID = models.CharField(max_length=1000, unique=True, null=True)
     title = models.CharField(max_length=1000,null=True)
-    journal = models.CharField(max_length=1000, null=True)
+    journal_name = models.CharField(max_length=1000, null=True, blank=True)
+    volume = models.CharField(max_length=100, null=True, blank=True)
+    issue = models.CharField(max_length=100, null=True, blank=True)
+    pages = models.CharField(max_length=100, null=True, blank=True)
     authors = models.ManyToManyField(Author, through='Authorship')
     year = models.IntegerField(null=True)
     abstract = models.TextField(null=True, blank=True)
