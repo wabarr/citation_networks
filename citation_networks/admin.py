@@ -3,7 +3,7 @@ from citation_networks.models import Paper, Authorship, Author
 
 
 class PaperAdmin(admin.ModelAdmin):
-    fields = ["SSID_paper_ID", "title", "year", "abstract", "journal_name", "volume", "issue", "pages", "cited_by", "citations_last_queried"]
+    fields = ["SSID_paper_ID", "title", "year", "abstract", "journal_name", "volume", "issue", "pages", "cited_by", "citations_last_queried","raw_SS_json"]
     search_fields = ["SSID_paper_ID", "title", "year","authors__name"]
 
 class AuthorAdmin(admin.ModelAdmin):

@@ -27,9 +27,6 @@ class NetworkJSON(View):
         return JsonResponse({"nodes": nodes, "links": links})
 
 
-class PaperDetailView(DetailView):
-    model = Paper
-
 class AuthorDetailView(DetailView):
     model = Author
 
@@ -47,5 +44,21 @@ class ImportCitationsFormView(FormView):
     success_url = '/papers/'
 
     def form_valid(self, form):
-        form.doImport(form.cleaned_data["multipleIDstring"])
+        form.addCitationsRefs(form.cleaned_data["ssid"])
         return super().form_valid(form)
+
+class ImportCitationsFormViewFromPaperDetail(ImportCitationsFormView):
+    # note this is more complicated than a standard detail view, because it contains a hidden
+    # form to query citations
+
+    template_name = 'citation_networks/paper_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["object"] = Paper.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_initial(self, **kwargs):
+        initial = super().get_initial(**kwargs)
+        initial["ssid"] = Paper.objects.get(pk=self.kwargs['pk']).SSID_paper_ID
+        return initial

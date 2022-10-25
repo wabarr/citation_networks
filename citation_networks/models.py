@@ -23,6 +23,7 @@ class Paper(models.Model):
     references = models.ManyToManyField('Paper', blank=True, related_name="refs")
     cited_by = models.ManyToManyField('Paper', blank=True, related_name="cites")
     citations_last_queried = models.DateTimeField(null=True, blank=True)
+    raw_SS_json = models.TextField(null=True, blank=True)
 
     def __str__(self):
         try:
