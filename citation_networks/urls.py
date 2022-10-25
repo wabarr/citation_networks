@@ -24,5 +24,6 @@ urlpatterns = [
     path('authors/<pk>', AuthorDetailView.as_view(), name="author-detail"),
     path('import-citations/', ImportCitationsFormView.as_view()),
     path('network/', NetworkView.as_view()),
-    path('network-json/', NetworkJSON.as_view())
+    path('network-json/', NetworkJSON.as_view()),
+    path('network-json/<pk>', NetworkJSONDetail.as_view())
 ]

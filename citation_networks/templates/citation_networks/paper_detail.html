@@ -1,9 +1,21 @@
 {% extends "citation_networks/base.html" %}
 
+{% block script_header %}
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style>
+    #citation_network {
+        width: 100%;
+        height: 600px;
+        border: 2px solid lightgray;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <div class="card-title"><h4>{{ object }}</h4></div>
@@ -26,6 +38,13 @@
 
 
     {% else %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card" id="citation_network">
+                </div>
+            </div>
+        </div>
     <div class="row">
         <div class="col-lg-12">
             <h4>{{ object.cited_by.all | length }} citations, last queried {{ object.citations_last_queried }}</h4>
@@ -77,6 +96,52 @@
     $("#id_ssid").hide();
     $(".helptext").hide();
     $("label").hide();
+
+
+
+    // create a network
+    var container = document.getElementById('citation_network');
+    var json = $.getJSON("/network-json/{{ object.id }}").done(function(data) {
+            var theData = {
+                nodes: data.nodes,
+                edges: data.links
+            };
+            var options = {
+            layout:{
+                improvedLayout: false
+                },
+            nodes : {
+                shape: 'ellipse',
+                size: 10
+            },
+            interaction: {
+                navigationButtons: true,
+                keyboard: false,
+                zoomView: false,
+                dragView: false
+            },
+            physics: {
+                enabled: true,
+                stabilization: true,
+                timestep: 0.3
+            },
+            edges: {
+                arrows: {
+                    to: {enabled: true, scaleFactor: 0.75, type: 'arrow'},
+                    middle: {enabled: false, scaleFactor: 1, type: 'arrow'},
+                    from: {enabled: true, scaleFactor: 0.3, type: 'arrow'}
+                }
+            }
+        };
+
+    // initialize your network!
+    var network = new vis.Network(container, theData, options);
+
+
+        });
+
+
     </script>
+
 {% endblock %}
 
