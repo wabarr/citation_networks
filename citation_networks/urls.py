@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from citation_networks.views import PaperListView, PaperDetailView, ImportCitationsFormView, AuthorDetailView
+from citation_networks.views import PaperListView, PaperDetailView, ImportCitationsFormView, AuthorDetailView, NetworkView, NetworkJSON
 
 urlpatterns = [
     path('', PaperListView.as_view()),
@@ -23,5 +23,7 @@ urlpatterns = [
     path('papers/', PaperListView.as_view()),
     path('papers/<pk>', PaperDetailView.as_view(), name="paper-detail"),
     path('authors/<pk>', AuthorDetailView.as_view(), name="author-detail"),
-    path('import-citations/', ImportCitationsFormView.as_view())
+    path('import-citations/', ImportCitationsFormView.as_view()),
+    path('network/', NetworkView.as_view()),
+    path('network-json/', NetworkJSON.as_view())
 ]

@@ -83,6 +83,7 @@ class ImportCitations(forms.Form):
             except TypeError:
                 pass
             thePaperObject.year=thePaperJSON["year"]
+            thePaperObject.citations_last_queried = datetime.datetime.now().astimezone()
             thePaperObject.save()
             addAuthors(thePaperObject, thePaperJSON["authors"])
             for citation in thePaperJSON["citations"]:
@@ -116,7 +117,6 @@ class ImportCitations(forms.Form):
                 citing_paper.save()
                 addAuthors(citing_paper, citation["authors"])
                 thePaperObject.cited_by.add(citing_paper)
-                thePaperObject.citations_last_queried = datetime.datetime.now().astimezone()
                 thePaperObject.save()
             for reference in thePaperJSON["references"]:
                 referring_paper, created = Paper.objects.get_or_create(SSID_paper_ID=reference["paperId"])
@@ -150,5 +150,6 @@ class ImportCitations(forms.Form):
                 addAuthors(referring_paper, reference["authors"])
                 thePaperObject.references.add(referring_paper)
                 thePaperObject.save()
-        for SSid in multipleIDstring.split(','):
+        ## do the thing
+        for SSid in multipleIDstring.replace(" ", "").replace("\n","").split(','):
             addPaper2DB(SSid)
