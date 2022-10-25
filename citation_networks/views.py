@@ -14,16 +14,27 @@ class NetworkView(ListView):
 class NetworkJSON(View):
     def get(self, request, *args, **kwargs):
         QS = Paper.objects.exclude(citations_last_queried__isnull=True).order_by("citations_last_queried").reverse()
-        nodes = []
+        nodeids = []
+        nodelabels = []
         links = []
         for paper in QS:
-            nodes.append({"id":paper.id, "name":paper.__str__()})
+            if paper.id not in nodeids:
+                nodeids.append(paper.id)
+                nodelabels.append(paper.__str__())
             for reference in paper.references.all():
-                nodes.append({"id": reference.id, "name": reference.__str__()})
-                links.append({"source": paper.id, "target": reference.id})
+                if reference.id not in nodeids:
+                    nodeids.append(reference.id)
+                    nodelabels.append(reference.__str__())
+                links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
-                nodes.append({"id": citation.id, "name": citation.__str__()})
-                links.append({"source": citation.id, "target": paper.id})
+                if citation.id not in nodeids:
+                    nodeids.append(citation.id)
+                    nodelabels.append(citation.__str__())
+                links.append({"from": citation.id, "to": paper.id})
+        nodes=[]
+        for nid, lab in zip(nodeids, nodelabels):
+            nodes.append({"id":nid, "label":lab})
+
         return JsonResponse({"nodes": nodes, "links": links})
 
 
