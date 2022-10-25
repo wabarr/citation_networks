@@ -13,11 +13,9 @@
         </div>
     </div>
     {% if object.citations_last_queried == None %}
-        <div class="row">
-        <h4>{{ object }} - never queried</h4>
-
-            <p>This paper was imported as a citation or a reference to another paper. We don't know anything about its citations or references. If you want to query Semantic Scholar to get {{ object }}'s references and citations, you can!</p>
-            <p>Semantic Scholar Paper ID: {{ object.SSID_paper_ID }}</p>
+        <div class="row" id="never-queried-row">
+        <h4>Never queried</h4>
+            <p>This paper was imported as a citation or a reference to another paper. We don't know anything about its citations or references. If you want to query Semantic Scholar to get {{ object }}'s references and citations, <a href="" id="query-citations">click here</a></p>
         </div>
 
     {% else %}
@@ -64,4 +62,21 @@
 </div>
     {% endif %}
 </div>
+
+    <form action="/import-citations/" method="post"  id="hidden-submit-form" style="display: none;">
+    {% csrf_token %}
+        <textarea name="multipleIDstring" cols="40" rows="10" required="" id="id_multipleIDstring">{{ object.SSID_paper_ID}}</textarea>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
+
+{% block custom_script %}
+    <script>
+    $(document).ready(function(){
+        if($("#never-queried-row").length)
+        {
+            $("#query-citations").click($("#hidden-submit-form").submit())
+        }
+    });
+    </script>
 {% endblock %}
