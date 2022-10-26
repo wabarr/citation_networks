@@ -3,6 +3,7 @@
 import os
 import sys
 
+sys.path.append("/home/wabarr/django/citation_networks")
 
 def main():
     """Run administrative tasks."""

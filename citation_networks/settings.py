@@ -27,7 +27,7 @@ SECRET_KEY = supersecrets.SECRETKEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['142.93.59.255','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['citations.are-awesome.com','localhost','127.0.0.1']
 
 
 # Application definition
@@ -127,8 +127,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT='/home/wabarr/django/static'
+MEDIA_ROOT = '/home/wabarr/django/media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

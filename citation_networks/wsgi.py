@@ -8,6 +8,9 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 """
 
 import os
+import sys
+sys.path.append("/home/wabarr/django/citation_networks/")
+sys.path.append("/home/wabarr/django/citation_networks/citation_networks/")
 
 from django.core.wsgi import get_wsgi_application
 
