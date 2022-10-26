@@ -16,14 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from citation_networks.views import *
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
+
+
 urlpatterns = [
-    path('', PaperListView.as_view()),
+    path('', login_required(PaperListView.as_view())),
     path('admin/', admin.site.urls),
-    path('papers/', PaperListView.as_view()),
-    path('papers/<pk>', ImportCitationsFormViewFromPaperDetail.as_view(), name="paper-detail"),
-    path('authors/<pk>', AuthorDetailView.as_view(), name="author-detail"),
-    path('import-citations/', ImportCitationsFormView.as_view()),
-    path('network/', NetworkView.as_view()),
-    path('network-json/', NetworkJSON.as_view()),
-    path('network-json/<pk>', NetworkJSONDetail.as_view())
-]
+    path('papers/', login_required(PaperListView.as_view())),
+    path('papers/<pk>', login_required(ImportCitationsFormViewFromPaperDetail.as_view()) , name="paper-detail"),
+    path('authors/<pk>', login_required(AuthorDetailView.as_view()), name="author-detail"),
+    path('import-citations/', login_required(ImportCitationsFormView.as_view())),
+    path('network/', login_required(NetworkView.as_view())),
+    path('network-json/', login_required(NetworkJSON.as_view())),
+    path('network-json/<pk>', login_required(NetworkJSONDetail.as_view())),
+    path('accounts/login/', auth_views.LoginView.as_view())]

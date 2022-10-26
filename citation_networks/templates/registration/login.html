@@ -1,0 +1,33 @@
+{% extends "citation_networks/base.html" %}
+
+{% block script_header %}
+
+    <style>
+
+        form {
+            margin: 10px
+        }
+        form label {
+            width: 100%;
+        }
+    </style>
+
+{% endblock %}
+
+  {% block content %}
+      <div class="container">
+        <div class="row">
+
+            <div class="col-md-3 card">
+                <form method="POST" action="/accounts/login/">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                       {{ form.as_p }}
+                    <input type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+      </div>
+
+
+{% endblock %}
