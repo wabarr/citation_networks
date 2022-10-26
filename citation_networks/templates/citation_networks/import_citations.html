@@ -1,13 +1,33 @@
 {% extends "citation_networks/base.html" %}
 
+{% block script_header %}
+
+    <style>
+
+        form {
+            margin: 10px
+        }
+        form label {
+            display: none;
+        }
+
+        input {
+            width: 100%;
+        }
+    </style>
+
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row">
+        <div class="col-md-3 card">
         <form action="/import-citations/" method="post">
          {% csrf_token %}
         {{ form }}
-         <input type="submit" value="Submit">
+         <input type="submit" value="Import Citations">
     </form>
+    </div>
     </div>
 </div>
 {% endblock %}
