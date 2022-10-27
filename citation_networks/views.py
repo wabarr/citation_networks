@@ -71,10 +71,12 @@ class AuthorDetailView(DetailView):
 class AuthorListView(ListView):
     model = Author
     queryset = Author.objects.all().order_by("name")
+    paginate_by = 30
 
 class PaperListView(ListView):
     model = Paper
     queryset = Paper.objects.exclude(citations_last_queried__isnull=True).order_by("citations_last_queried").reverse()
+    paginate_by = 30
 
 class ImportCitationsFormView(FormView):
     template_name = 'citation_networks/import_citations.html'

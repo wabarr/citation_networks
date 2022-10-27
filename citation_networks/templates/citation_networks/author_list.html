@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-<h3>Papers in database whose citations have been queried</h3>
+<h3>Authors in database</h3>
     <div class="row">
         {% if not object_list %}There is nothing to see here
         {% else %}
@@ -10,9 +10,8 @@
             <div class="col-lg-4">
                 <div class="card">
                 <div class="card-body">
-                    <div class="card-title"><a href="{%  url 'paper-detail' object.id %}">{{ object }}</a></div>
-                    <p>Cited by {{ object.cited_by.all | length }} articles</p>
-                    <p>last queried {{ object.citations_last_queried }}</p>
+                    <div class="card-title"><a href="{%  url 'author-detail' object.id %}">{{ object }}</a></div>
+
                 </div>
                 </div>
             </div>
@@ -21,9 +20,8 @@
              {% endif %}
             {% endfor %}
 
-        </div>
-        {% endif %}
+            {% endif %}
+            </div>
     {% if paginator %}{% include 'citation_networks/pagination.html' %}{% endif %}
 </div>
-
 {% endblock %}

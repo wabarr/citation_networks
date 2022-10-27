@@ -23,8 +23,9 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', login_required(PaperListView.as_view())),
     path('admin/', admin.site.urls),
-    path('papers/', login_required(PaperListView.as_view())),
+    path('papers/', login_required(PaperListView.as_view()), name="paper-list"),
     path('papers/<pk>', login_required(ImportCitationsFormViewFromPaperDetail.as_view()) , name="paper-detail"),
+    path('authors/', login_required(AuthorListView.as_view()), name="author-list"),
     path('authors/<pk>', login_required(AuthorDetailView.as_view()), name="author-detail"),
     path('import-citations/', login_required(ImportCitationsFormView.as_view())),
     path('network/', login_required(NetworkView.as_view())),
