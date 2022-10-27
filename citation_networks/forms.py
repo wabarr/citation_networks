@@ -107,8 +107,7 @@ class ImportCitations(forms.Form):
             fields = ["citationCount", "authors", "year", "title", "journal", "publicationTypes", "abstract",
                       "citations", "citations.authors", "citations.year", "citations.title",
                       "citations.journal",
-                      "references", "references.authors", "references.year", "references.title",
-                      "references.journal"]
+                      "references", "referenceCount", "references.authors", "references.year", "references.title", "references.journal"]
             URL = semantic_API_url + id + "?fields={fields}".format(
                 fields=",".join(fields))
             print(URL)
@@ -121,6 +120,15 @@ class ImportCitations(forms.Form):
             raise ValidationError(
                 "something dreadful happened when trying to fetch paper.  Check your URL {url}".format(
                     url=URL))
+
+        ## if we want to be able to handle papers with more than 1000 citations or references
+        ## need to add in multiple calls to API, because they limit the number returned to 1000
+        if thePaperJSON["referenceCount"] > 1000:
+            raise ValidationError("I don't know how to import a paper with more than 1000 references. Not imported.")
+        if thePaperJSON["citationCount"] > 1000:
+            raise ValidationError("I don't know how to import a paper with more than 1000 citations. Not imported.")
+
+
 
         thePaperObject, created = Paper.objects.get_or_create(SSID_paper_ID=thePaperJSON["paperId"])
         thePaperObject.raw_SS_json = json.dumps(thePaperJSON)
