@@ -75,18 +75,18 @@ class NetworkJSON(View):
             for reference in paper.references.all():
                 if reference.id not in nodeids:
                     nodeids.append(reference.id)
-                    nodelabels.append("")
+                    nodelabels.append(reference.__str__())
                     nodecolors.append("#38726C")
                     nodeopacities.append(0.6)
-                    nodesizes.append(10)
+                    nodesizes.append(15)
                 links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
                 if citation.id not in nodeids:
                     nodeids.append(citation.id)
-                    nodelabels.append("")
+                    nodelabels.append(citation.__str__())
                     nodecolors.append("#38726C")
                     nodeopacities.append(0.6)
-                    nodesizes.append(10)
+                    nodesizes.append(15)
                 links.append({"from": citation.id, "to": paper.id})
         nodes=[]
         for nid, col, op, size, lab in zip(nodeids, nodecolors, nodeopacities, nodesizes, nodelabels):
