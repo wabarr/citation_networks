@@ -1,29 +1,26 @@
 {% extends "citation_networks/base.html" %}
-
+{% load static %}
 {% block script_header %}
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script type="text/javascript" defer src="{% static "citation_networks/vis-network.min.js" %}"></script>
 
     <style>
     #citation_network {
         width: 100%;
         height: 600px;
-        border: 2px solid lightgray;
+    }
+    .triangle {
+        font-size: 200%;
+        vertical-align: center;
+    }
+
+    p.triangle-p {
+    margin-bottom: 0px;
     }
     </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title"><h4>{{ object }}</h4></div>
-                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
-            </div>
-        </div>
-        </div>
-    </div>
     {% if object.citations_last_queried == None %}
         <div class="row" id="never-queried-row">
         <h4>Never queried</h4>
@@ -40,12 +37,31 @@
     {% else %}
 
         <div class="row">
-            <div class="col-lg-12">
-                <div class="card" id="citation_network">
-                </div>
+            <div class="col-md-3">
+
+                <p class="triangle-p"><span class="triangle" style="color: #D34E24">&#x25B2;</span> {{ object }}</p>
+                <p class="triangle-p"><span class="triangle" style="color: #F7F052">&#x25B2;</span> Citations (n={{ object.cited_by.all | length }})</p>
+                <p class="triangle-p"><span class="triangle" style="color: #38726C">&#x25B2;</span> References (n={{ object.references.all | length }})</p>
+                <p><button id="fit-to-screen">Auto zoom</button></p>
+                <p><button id="freeze" class="toggle">Freeze visualization</button></p>
+                <p><button id="restart" class="toggle" style="display: none">Restart visualization</button></p>
+            </div>
+            <div class="col-md-9">
+                <div id="citation_network"></div>
             </div>
         </div>
     <div class="row">
+        <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title"><h4>{{ object }}</h4></div>
+                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+
         <div class="col-lg-12">
             <h4>{{ object.cited_by.all | length }} citations, last queried {{ object.citations_last_queried }}</h4>
         </div>
@@ -93,53 +109,64 @@
 
 {% block custom_script %}
     <script>
-    $("#id_ssid").hide();
-    $(".helptext").hide();
-    $("label").hide();
+    $(document).ready(function() {
+        $("#id_ssid").hide();
+        $(".helptext").hide();
+        $("label").hide();
 
 
 
-    // create a network
-    var container = document.getElementById('citation_network');
-    var json = $.getJSON("/network-json/{{ object.id }}").done(function(data) {
-            var theData = {
-                nodes: data.nodes,
-                edges: data.links
-            };
-            var options = {
-            layout:{
-                improvedLayout: false
+        // create a network
+        var container = document.getElementById('citation_network');
+        var json = $.getJSON("/network-json/{{ object.id }}").done(function(data) {
+                var theData = {
+                    nodes: data.nodes,
+                    edges: data.links
+                };
+                var options = {
+                layout:{
+                    improvedLayout: false
+                    },
+                nodes : {
+                    shape: 'triangle',
+                    size: 20
                 },
-            nodes : {
-                shape: 'ellipse',
-                size: 10
-            },
-            interaction: {
-                navigationButtons: true,
-                keyboard: false,
-                zoomView: false,
-                dragView: false
-            },
-            physics: {
-                enabled: true,
-                stabilization: true,
-                timestep: 0.3
-            },
-            edges: {
-                arrows: {
-                    to: {enabled: true, scaleFactor: 0.75, type: 'arrow'},
-                    middle: {enabled: false, scaleFactor: 1, type: 'arrow'},
-                    from: {enabled: true, scaleFactor: 0.3, type: 'arrow'}
+                interaction: {
+                    navigationButtons: false,
+                    keyboard: true,
+                    zoomView: true,
+                    dragView: true
+                },
+                physics: {
+                    enabled: true,
+                    stabilization: false
+                },
+                edges: {
+                    color: 'grey'
                 }
-            }
-        };
+            };
 
-    // initialize your network!
-    var network = new vis.Network(container, theData, options);
-
-
+        // initialize your network!
+        var network = new vis.Network(container, theData, options);
+        $("#fit-to-screen").click(function(){
+            network.fit();
         });
+        $("#freeze").click(function(){
+            network.setOptions({physics: {enabled: false}});
+            $('#freeze').toggle();
+            $("#restart").show();
+        });
+        $("#restart").click(function(){
+            network.setOptions({physics: {enabled: true}});
+            $("#restart").toggle();
+            $("#freeze").show();
+        });
+        network.on('stabilized', function(){
+            network.fit();
+        })
+            });
 
+    });
 
     </script>
 

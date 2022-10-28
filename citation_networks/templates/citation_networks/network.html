@@ -6,8 +6,7 @@
     <style>
     #citation_network {
         width: 100%;
-        height: 600px;
-        border: 2px solid lightgray;
+        height: 500px;
     }
     </style>
 {% endblock %}
@@ -16,7 +15,12 @@
 <div class="container">
     <h3>Current Citation Network</h3>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-3">
+            <p><button id="fit-to-screen">Auto zoom</button></p>
+            <p><button id="freeze" class="toggle">Freeze visualization</button></p>
+            <p><button id="restart" class="toggle" style="display: none">Restart visualization</button></p>
+        </div>
+        <div class="col-md-9">
             <div id="citation_network"></div>
         </div>
     </div>
@@ -41,10 +45,10 @@
                     shape: 'triangle'
                 },
                 interaction: {
-                    navigationButtons: true,
+                    navigationButtons: false,
                     keyboard: true,
-                    zoomView: false,
-                    dragView: false
+                    zoomView: true,
+                    dragView: true
                 },
                 physics: {
                     enabled: true,
@@ -65,15 +69,22 @@
 
         // initialize your network!
         var network = new vis.Network(container, theData, options);
-        //network.on("stabilizationIterationsDone", function () {
-        //    network.setOptions( {physics: {enabled: false}} )
-        //    console.log("physics disabled after stabilization");
-        //});
-         //setTimeout(function(){
-         //     network.setOptions({physics: {enabled: false}})
-         //     console.log("physics disabled after 60 second timer")
-        //}, 60000);
-        //      network.fit();
+        $("#fit-to-screen").click(function(){
+            network.fit();
+        });
+        $("#freeze").click(function(){
+            network.setOptions({physics: {enabled: false}});
+            $('#freeze').toggle();
+            $("#restart").show();
+        });
+        $("#restart").click(function(){
+            network.setOptions({physics: {enabled: true}});
+            $("#restart").toggle();
+            $("#freeze").show();
+        });
+        network.on('stabilized', function(){
+            network.fit();
+        })
 
             });
 

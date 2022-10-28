@@ -21,7 +21,7 @@ class NetworkJSONDetail(View):
         links = []
 
         nodecolors = []
-        nodecolors.append("#346beb") #color for central paper
+        nodecolors.append("#D34E24") #color for central paper
 
         nodelabels = []
         nodelabels.append(paper.__str__())
@@ -31,17 +31,17 @@ class NetworkJSONDetail(View):
             if reference.id not in nodeids:
                 nodeids.append(reference.id)
                 nodelabels.append(reference.__str__())
-                nodecolors.append("#EEC170")
+                nodecolors.append("#38726C")
             links.append({"from": paper.id, "to": reference.id})
         for citation in paper.cited_by.all():
             if citation.id not in nodeids:
                 nodeids.append(citation.id)
                 nodelabels.append(citation.__str__())
-                nodecolors.append("#59CD90")
+                nodecolors.append("#F7F052")
             links.append({"from": citation.id, "to": paper.id})
         nodes = []
         for nid, lab, col in zip(nodeids, nodelabels, nodecolors):
-            nodes.append({"id": nid, "label": lab, "color": col})
+            nodes.append({"id": nid, "title": lab, "color": col})
         return JsonResponse({"nodes": nodes, "links": links})
 
 class NetworkJSON(View):
@@ -52,13 +52,13 @@ class NetworkJSON(View):
 
         nodelabels = []
 
+        nodetitles = []
+
         nodecolors = []
 
         links = []
 
         nodesizes = []
-
-        nodevalue = []
 
         nodeopacities = []
 
@@ -66,7 +66,8 @@ class NetworkJSON(View):
             ## add queried papers to nodes and format
             nodeids.append(paper.id)
             nodelabels.append(paper.__str__())
-            nodecolors.append("#F28123")
+            nodetitles.append(paper.__str__())
+            nodecolors.append("#D34E24")
             nodeopacities.append(1)
             nodesizes.append(100)
 
@@ -75,22 +76,24 @@ class NetworkJSON(View):
             for reference in paper.references.all():
                 if reference.id not in nodeids:
                     nodeids.append(reference.id)
-                    nodelabels.append(reference.__str__())
+                    nodelabels.append("g")
+                    nodetitles.append(reference.__str__())
                     nodecolors.append("#38726C")
                     nodeopacities.append(0.6)
-                    nodesizes.append(15)
+                    nodesizes.append(20)
                 links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
                 if citation.id not in nodeids:
                     nodeids.append(citation.id)
-                    nodelabels.append(citation.__str__())
+                    nodelabels.append("g")
+                    nodetitles.append(citation.__str__())
                     nodecolors.append("#38726C")
                     nodeopacities.append(0.6)
-                    nodesizes.append(15)
+                    nodesizes.append(20)
                 links.append({"from": citation.id, "to": paper.id})
         nodes=[]
-        for nid, col, op, size, lab in zip(nodeids, nodecolors, nodeopacities, nodesizes, nodelabels):
-            nodes.append({"id":nid, "title":lab, "color":col, "opacity":op, "size":size})
+        for nid, col, op, size, lab, title in zip(nodeids, nodecolors, nodeopacities, nodesizes, nodelabels, nodetitles):
+            nodes.append({"id":nid, "title":title, "color":col, "opacity":op, "size":size, "label":lab})
 
         return JsonResponse({"nodes": nodes, "links": links})
 
