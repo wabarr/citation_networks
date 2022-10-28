@@ -68,7 +68,7 @@ class NetworkJSON(View):
             nodelabels.append(paper.__str__())
             nodecolors.append("#F28123")
             nodeopacities.append(1)
-            nodesizes.append(50)
+            nodesizes.append(60)
 
         for paper in QS:
             ## iterate on queryset again and add refs and cites
@@ -77,7 +77,7 @@ class NetworkJSON(View):
                     nodeids.append(reference.id)
                     nodelabels.append("")
                     nodecolors.append("#38726C")
-                    nodeopacities.append(0.2)
+                    nodeopacities.append(0.6)
                     nodesizes.append(10)
                 links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
@@ -85,7 +85,7 @@ class NetworkJSON(View):
                     nodeids.append(citation.id)
                     nodelabels.append("")
                     nodecolors.append("#38726C")
-                    nodeopacities.append(0.2)
+                    nodeopacities.append(0.6)
                     nodesizes.append(10)
                 links.append({"from": citation.id, "to": paper.id})
         nodes=[]
