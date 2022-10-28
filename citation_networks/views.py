@@ -14,13 +14,19 @@ class NetworkView(ListView):
 class NetworkJSONDetail(View):
     def get(self, request, *args, **kwargs):
         paper = Paper.objects.get(pk=self.kwargs["pk"])
+
         nodeids = []
-        nodelabels = []
-        links = []
-        nodecolors = []
         nodeids.append(paper.id)
+
+        links = []
+
+        nodecolors = []
+        nodecolors.append("#346beb") #color for central paper
+
+        nodelabels = []
         nodelabels.append(paper.__str__())
-        nodecolors.append("#346beb")
+
+
         for reference in paper.references.all():
             if reference.id not in nodeids:
                 nodeids.append(reference.id)
@@ -41,26 +47,50 @@ class NetworkJSONDetail(View):
 class NetworkJSON(View):
     def get(self, request, *args, **kwargs):
         QS = Paper.objects.exclude(citations_last_queried__isnull=True).order_by("citations_last_queried").reverse()
+
         nodeids = []
+
         nodelabels = []
+
+        nodecolors = []
+
         links = []
+
+        nodesizes = []
+
+        nodevalue = []
+
+        nodeopacities = []
+
         for paper in QS:
-            if paper.id not in nodeids:
-                nodeids.append(paper.id)
-                nodelabels.append(paper.__str__())
+            ## add queried papers to nodes and format
+            nodeids.append(paper.id)
+            nodelabels.append(paper.__str__())
+            nodecolors.append("#F28123")
+            nodeopacities.append(1)
+            nodesizes.append(50)
+
+        for paper in QS:
+            ## iterate on queryset again and add refs and cites
             for reference in paper.references.all():
                 if reference.id not in nodeids:
                     nodeids.append(reference.id)
-                    nodelabels.append(reference.__str__())
+                    nodelabels.append("")
+                    nodecolors.append("#38726C")
+                    nodeopacities.append(0.2)
+                    nodesizes.append(10)
                 links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
                 if citation.id not in nodeids:
                     nodeids.append(citation.id)
-                    nodelabels.append(citation.__str__())
+                    nodelabels.append("")
+                    nodecolors.append("#38726C")
+                    nodeopacities.append(0.2)
+                    nodesizes.append(10)
                 links.append({"from": citation.id, "to": paper.id})
         nodes=[]
-        for nid, lab in zip(nodeids, nodelabels):
-            nodes.append({"id":nid, "label":lab})
+        for nid, col, op, size, lab in zip(nodeids, nodecolors, nodeopacities, nodesizes, nodelabels):
+            nodes.append({"id":nid, "title":lab, "color":col, "opacity":op, "size":size})
 
         return JsonResponse({"nodes": nodes, "links": links})
 

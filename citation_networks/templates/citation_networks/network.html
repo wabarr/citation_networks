@@ -1,7 +1,8 @@
 {% extends "citation_networks/base.html" %}
+{% load static %}
 
 {% block script_header %}
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script type="text/javascript" defer src="{% static "citation_networks/vis-network.min.js" %}"></script>
     <style>
     #citation_network {
         width: 100%;
@@ -22,45 +23,50 @@
 
 {% block custom_script %}
     <script>
-    // create a network
-    var container = document.getElementById('citation_network');
-    var json = $.getJSON("/network-json/").done(function(data) {
-            var theData = {
-                nodes: data.nodes,
-                edges: data.links
-            };
-            var options = {
-            layout:{
-                improvedLayout: false
+    $(document).ready(function() {
+        // create a network
+        var container = document.getElementById('citation_network');
+        var json = $.getJSON("/network-json/").done(function(data) {
+                var theData = {
+                    nodes: data.nodes,
+                    edges: data.links
+                };
+                var options = {
+                layout:{
+                    improvedLayout: false
+                    },
+                nodes:{
+                    shape: 'triangle'
                 },
-            nodes : {
-                shape: 'ellipse',
-                size: 10
-            },
-            interaction: {
-                navigationButtons: true,
-                keyboard: false,
-                zoomView: false,
-                dragView: false
-            },
-            physics: {
-                enabled: false,
-                stabilization: true
-            },
-            edges: {
-                arrows: {
-                    to: {enabled: true, scaleFactor: 0.75, type: 'arrow'},
-                    middle: {enabled: false, scaleFactor: 1, type: 'arrow'},
-                    from: {enabled: true, scaleFactor: 0.3, type: 'arrow'}
+                interaction: {
+                    navigationButtons: true,
+                    keyboard: true,
+                    zoomView: false,
+                    dragView: false
+                },
+                physics: {
+                    enabled: false,
+                    stabilization: true
+                },
+                edges: {
+                    color: 'grey',
+                    arrows: {
+                        to: {enabled: true, scaleFactor: 0.75, type: 'arrow'},
+                        middle: {enabled: false, scaleFactor: 1, type: 'arrow'},
+                        from: {enabled: true, scaleFactor: 0.3, type: 'arrow'}
+                    }
                 }
-            }
-        };
+            };
 
-    // initialize your network!
-    var network = new vis.Network(container, theData, options);
-
-
+        // initialize your network!
+        var network = new vis.Network(container, theData, options);
+        window.addEventListener("load", () => {
+        draw();
         });
+
+            });
+    } );
+
 
 
     </script>
