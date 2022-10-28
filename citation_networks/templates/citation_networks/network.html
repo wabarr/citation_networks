@@ -45,8 +45,15 @@
                     dragView: false
                 },
                 physics: {
-                    enabled: false,
-                    stabilization: true
+                    enabled: true,
+                    barnesHut: {
+                        gravitationalConstant: -5000
+                    },
+                    minVelocity: 45,
+                    timestep: 0.4,
+                    stabilization: {
+                        enabled: false,
+                }
                 },
                 edges: {
                     color: 'grey',
@@ -60,12 +67,20 @@
 
         // initialize your network!
         var network = new vis.Network(container, theData, options);
-        window.addEventListener("load", () => {
-        draw();
+        network.on("stabilizationIterationsDone", function () {
+            network.setOptions( {physics: {enabled: false}} )
+            console.log("physics disabled after stabilization");
         });
+         setTimeout(function(){
+              network.setOptions({physics: {enabled: false}})
+              console.log("physics disabled after 60 second timer")
+        }, 60000);
+              network.fit();
 
             });
+
     } );
+
 
 
 
