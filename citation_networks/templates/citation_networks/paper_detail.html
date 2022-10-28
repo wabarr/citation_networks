@@ -163,7 +163,11 @@
         });
         network.on('stabilized', function(){
             network.fit();
-        })
+        });
+        network.on('click', function( params ) {
+            window.location.href = ("/papers/" + params.nodes[0]);
+
+        });
             });
 
     });
