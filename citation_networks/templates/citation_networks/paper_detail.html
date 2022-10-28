@@ -8,12 +8,12 @@
         width: 100%;
         height: 600px;
     }
-    .triangle {
+    .dot {
         font-size: 200%;
         vertical-align: center;
     }
 
-    p.triangle-p {
+    p.dot-p {
     margin-bottom: 0px;
     }
     </style>
@@ -39,9 +39,9 @@
         <div class="row">
             <div class="col-md-3">
 
-                <p class="triangle-p"><span class="triangle" style="color: #D34E24">&#x25B2;</span> {{ object }}</p>
-                <p class="triangle-p"><span class="triangle" style="color: #F7F052">&#x25B2;</span> Citations (n={{ object.cited_by.all | length }})</p>
-                <p class="triangle-p"><span class="triangle" style="color: #38726C">&#x25B2;</span> References (n={{ object.references.all | length }})</p>
+                <p class="dot-p"><span class="dot" style="color: #D34E24">&#11044;</span> {{ object }}</p>
+                <p class="dot-p"><span class="dot" style="color: #F7F052">&#11044;</span> Citations (n={{ object.cited_by.all | length }})</p>
+                <p class="dot-p"><span class="dot" style="color: #38726C">&#11044;</span> References (n={{ object.references.all | length }})</p>
                 <p><button id="fit-to-screen">Auto zoom</button></p>
                 <p><button id="freeze" class="toggle">Freeze visualization</button></p>
                 <p><button id="restart" class="toggle" style="display: none">Restart visualization</button></p>
@@ -125,10 +125,10 @@
                 };
                 var options = {
                 layout:{
-                    improvedLayout: false
+                    improvedLayout: true
                     },
                 nodes : {
-                    shape: 'triangle',
+                    shape: 'dot',
                     size: 20
                 },
                 interaction: {
