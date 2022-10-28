@@ -68,7 +68,7 @@ class NetworkJSON(View):
             nodelabels.append(paper.__str__())
             nodecolors.append("#F28123")
             nodeopacities.append(1)
-            nodesizes.append(60)
+            nodesizes.append(100)
 
         for paper in QS:
             ## iterate on queryset again and add refs and cites

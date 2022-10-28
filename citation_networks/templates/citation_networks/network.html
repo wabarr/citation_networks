@@ -67,15 +67,15 @@
 
         // initialize your network!
         var network = new vis.Network(container, theData, options);
-        network.on("stabilizationIterationsDone", function () {
-            network.setOptions( {physics: {enabled: false}} )
-            console.log("physics disabled after stabilization");
-        });
-         setTimeout(function(){
-              network.setOptions({physics: {enabled: false}})
-              console.log("physics disabled after 60 second timer")
-        }, 60000);
-              network.fit();
+        //network.on("stabilizationIterationsDone", function () {
+        //    network.setOptions( {physics: {enabled: false}} )
+        //    console.log("physics disabled after stabilization");
+        //});
+         //setTimeout(function(){
+         //     network.setOptions({physics: {enabled: false}})
+         //     console.log("physics disabled after 60 second timer")
+        //}, 60000);
+        //      network.fit();
 
             });
 
