@@ -28,7 +28,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title"><h4>{{ object }}</h4></div>
-                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
+                <p>{% for authorship in object.authorship_set.all %} <a href="{% url 'author-detail' authorship.author.pk %}">{{ authorship.author.name }}</a>, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
             </div>
         </div>
         </div>
@@ -49,12 +49,13 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title"><h4>{{ object }}</h4></div>
-                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
+                <p>{% for authorship in object.authorship_set.all %} <a href="{% url 'author-detail' authorship.author.pk %}">{{ authorship.author.name }}</a>, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
             </div>
         </div>
         </div>
     </div>
 
+         <!--
         <div class="row">
             <div class="col-md-3">
 
@@ -69,6 +70,7 @@
                 <div id="citation_network"></div>
             </div>
         </div>
+        -->
 
     <div class="row">
 
@@ -88,7 +90,7 @@
                     <p>{%  if citation.citations_last_queried %}
                        Citations queried! 😀
                         {% else %}
-                        <form class="inline-import-paper-form" method="post">
+                        <form action="/import-paper/" class="inline-import-paper-form" method="post">
                             {% csrf_token %}
                             <input type="text" name="ssid" value="{{citation.SSID_paper_ID}}" required="" id="id_ssid" style="display: none;">
                             <input type="submit" value="Import Citations">
@@ -118,7 +120,7 @@
                     <p>{%  if reference.citations_last_queried %}
                        Citations queried! 😀
                         {% else %}
-                        <form class="inline-import-paper-form" method="post">
+                        <form action="/import-paper/" class="inline-import-paper-form" method="post">
                             {% csrf_token %}
                             <input type="text" name="ssid" value="{{reference.SSID_paper_ID}}" required="" id="id_ssid" style="display: none;">
                             <input type="submit" value="Import Citations">
@@ -146,19 +148,19 @@
         $("label").hide();
 
         $(".inline-import-paper-form").submit(function( event ) {
-        $(this).append("<span id='remove-me'></span>");
+        $(this).append("<span id='remove-me'></span>"); // add an element to later use as anchor for removing the form
         $.ajax({
             type: "POST",
             url: {% url 'import-paper' %},
             data: $(this).serialize(),
             encode: true,
         }).always(function (data, textStatus, jqXHR) {
+            // ideally should check if it actually worked!
             $("#remove-me").parent().before("Citations queried! 😀").remove();
-
         });
         event.preventDefault();
         });
-
+        /*
         // create a network
         var container = document.getElementById('citation_network');
         var json = $.getJSON("/network-json/{{ object.id }}").done(function(data) {
@@ -208,11 +210,12 @@
             network.fit();
         });
         network.on('click', function( params ) {
-            window.location.href = ("/papers/" + params.nodes[0]);
-
+            if (typeof params.nodes[0] !== 'undefined') {
+                window.location.href = ("/papers/" + params.nodes[0]);
+            };
         });
             });
-
+    */
     });
 
     </script>

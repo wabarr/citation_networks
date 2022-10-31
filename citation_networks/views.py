@@ -120,12 +120,6 @@ class ImportPaperFormView(FormView):
         form.addCitationsRefs(form.cleaned_data["ssid"])
         return super().form_valid(form)
 
-    def render_to_response(self, context, **response_kwargs):
-        """ Allow AJAX requests to be handled more gracefully """
-        if self.request.is_ajax():
-            return JsonResponse({"status":"success"})
-        else:
-            return super(ImportPaperFormView, self).render_to_response(context, **response_kwargs)
 
 class ImportAuthorFormView(FormView):
     template_name = 'citation_networks/import_author.html'
