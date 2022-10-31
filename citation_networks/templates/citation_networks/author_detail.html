@@ -1,8 +1,29 @@
 {% extends "citation_networks/base.html" %}
 
+{% block script_header %}
+    <style>
+
+    #json-submit-link {
+        color: #0d6efd;
+        text-decoration: underline;
+        cursor: pointer
+    }
+
+    </style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-
+{% if not object.papers_last_queried %}
+    <h4>We have never queried papers for this author.  </h4>
+    <div class="col-lg-6">
+                    <form action="/import-author/" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="ss_author_id" value="{{ object.SS_author_ID }}" required="" id="ss_author_id" style="display: none;">
+                    <input type="submit" value="Import papers for {{ object }}">
+                    </form>
+     </div>
+{% endif %}
     <h4>Papers by {{ object }}</h4>
     <div class="row">
             {% for authorship in object.authorship_set.all %}
@@ -11,9 +32,20 @@
                 <div class="card">
                 <div class="card-body">
                     <div class="card-title"><a href="{%  url 'paper-detail' authorship.paper.id %}">{{ authorship.paper }}</a></div>
+                    <p>{{ authorship.paper.title }}.  {% if authorship.paper.journal_name %}<i>{{ authorship.paper.journal_name }}</i>{% endif %}</p>
+                    <p>{%  if authorship.paper.citations_last_queried %}
+                       Citations queried! 😀
+                        {% else %}
+                        <form class="inline-import-paper-form" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="ssid" value="{{authorship.paper.SSID_paper_ID}}" required="" id="id_ssid" style="display: none;">
+                            <input type="submit" value="Import Citations">
+                        </form>
+                    {% endif %}</p>
                 </div>
                 </div>
-            </div>
+             </div>
+
             {% if forloop.counter|divisibleby:3 %}
                 </div><div class="row">
             {% endif %}
@@ -21,4 +53,23 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block custom_script %}
+    <script>
+    $(".inline-import-paper-form").submit(function( event ) {
+        $(this).append("<span id='remove-me'></span>");
+        $.ajax({
+            type: "POST",
+            url: {% url 'import-paper' %},
+            data: $(this).serialize(),
+            encode: true,
+    }).always(function (data, textStatus, jqXHR) {
+        $("#remove-me").parent().before("Citations queried! 😀").remove();
+
+    });
+    event.preventDefault();
+    });
+
+    </script>
 {% endblock %}

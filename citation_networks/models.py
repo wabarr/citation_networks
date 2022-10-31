@@ -3,6 +3,8 @@ from django.db import models
 class Author(models.Model):
     SS_author_ID = models.PositiveBigIntegerField(unique=True)
     name = models.CharField(max_length=1000)
+    raw_SS_json = models.TextField(null=True, blank=True)
+    papers_last_queried = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         try:

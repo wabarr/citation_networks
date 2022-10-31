@@ -33,7 +33,7 @@
         </div>
         </div>
             <p>This paper was imported as a citation or a reference to another paper. We don't know anything about its citations or references.</a></p>
-            <form action="/import-citations/" method="post">
+            <form action="/import-paper/" method="post">
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Get Citations and References for {{ object }}">
@@ -43,6 +43,17 @@
 
 
     {% else %}
+
+    <div class="row">
+        <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title"><h4>{{ object }}</h4></div>
+                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
+            </div>
+        </div>
+        </div>
+    </div>
 
         <div class="row">
             <div class="col-md-3">
@@ -58,16 +69,7 @@
                 <div id="citation_network"></div>
             </div>
         </div>
-    <div class="row">
-        <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title"><h4>{{ object }}</h4></div>
-                <p>{% for authorship in object.authorship_set.all %} {{ authorship.author.name }}, {% endfor %}{{ object.year }}. {{ object.title }}. <i>{{ object.journal_name }}</i>. {{ object.volume }}:{{ object.pages }}</p>
-            </div>
-        </div>
-        </div>
-    </div>
+
     <div class="row">
 
         <div class="col-lg-12">
@@ -81,6 +83,17 @@
                 <div class="card">
                 <div class="card-body">
                     <div class="card-title"><a href="{%  url 'paper-detail' citation.id %}">{{ citation }}</a></div>
+                    <p>{{ citation.title }}.  {% if citation.journal_name %}<i>{{ citation.journal_name }}</i>{% endif %}</p>
+
+                    <p>{%  if citation.citations_last_queried %}
+                       Citations queried! 😀
+                        {% else %}
+                        <form class="inline-import-paper-form" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="ssid" value="{{citation.SSID_paper_ID}}" required="" id="id_ssid" style="display: none;">
+                            <input type="submit" value="Import Citations">
+                        </form>
+                    {% endif %}</p>
                 </div>
                 </div>
             </div>
@@ -101,6 +114,16 @@
                 <div class="card">
                 <div class="card-body">
                     <div class="card-title"><a href="{%  url 'paper-detail' reference.id %}">{{ reference }}</a></div>
+                    <p>{{ reference.title }}.  {% if reference.journal_name %}<i>{{ reference.journal_name }}</i>{% endif %}</p>
+                    <p>{%  if reference.citations_last_queried %}
+                       Citations queried! 😀
+                        {% else %}
+                        <form class="inline-import-paper-form" method="post">
+                            {% csrf_token %}
+                            <input type="text" name="ssid" value="{{reference.SSID_paper_ID}}" required="" id="id_ssid" style="display: none;">
+                            <input type="submit" value="Import Citations">
+                        </form>
+                    {% endif %}</p>
                 </div>
                 </div>
             </div>
@@ -122,7 +145,19 @@
         $(".helptext").hide();
         $("label").hide();
 
+        $(".inline-import-paper-form").submit(function( event ) {
+        $(this).append("<span id='remove-me'></span>");
+        $.ajax({
+            type: "POST",
+            url: {% url 'import-paper' %},
+            data: $(this).serialize(),
+            encode: true,
+        }).always(function (data, textStatus, jqXHR) {
+            $("#remove-me").parent().before("Citations queried! 😀").remove();
 
+        });
+        event.preventDefault();
+        });
 
         // create a network
         var container = document.getElementById('citation_network');

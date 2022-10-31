@@ -71,21 +71,20 @@ def helper_add_cites_refs(paper_object, JSON_list, citationORreference):
 
         if citationORreference == "citation":
             paper_object.cited_by.add(potentially_new_paper)
-            paper_object.save()
 
         if citationORreference == "reference":
             paper_object.references.add(potentially_new_paper)
-            paper_object.save()
 
         paper_object.citations_last_queried = datetime.datetime.now().astimezone()
+        paper_object.save()
 
-class ImportCitations(forms.Form):
-    ssid = forms.CharField(help_text="Enter Semantic Scholar ID")
+class ImportPaperCitations(forms.Form):
+    ssid = forms.CharField(help_text="Enter Semantic Scholar Paper ID")
 
     def addCitationsRefs(self, id):
         thePaperObject = Paper.objects.get(SSID_paper_ID=id)
         thePaperJSON = json.loads(thePaperObject.raw_SS_json)
-        
+
         helper_add_cites_refs(thePaperObject, thePaperJSON["citations"], "citation")
 
         helper_add_cites_refs(thePaperObject, thePaperJSON["references"], "reference")
@@ -96,7 +95,7 @@ class ImportCitations(forms.Form):
         ## raw json into a model field called Paper.raw_SS_json
         id = self.cleaned_data["ssid"]
         semantic_API_url = "https://api.semanticscholar.org/graph/v1/paper/"
-        #status_code = None
+        # status_code = None
         fields = ["citationCount", "authors", "year", "title", "journal", "publicationTypes", "abstract",
                   "citations", "citations.authors", "citations.year", "citations.title",
                   "citations.journal",
@@ -110,7 +109,8 @@ class ImportCitations(forms.Form):
             if paper.status_code == 200:
                 thePaperJSON = paper.json()
             else:
-                raise ValidationError("Got error code {code} from Semantic Scholar".format(code=paper_response_from_SS_API.status_code))
+                raise ValidationError(
+                    "Got error code {code} from Semantic Scholar".format(code=paper_response_from_SS_API.status_code))
         except:
             raise ValidationError(
                 "something dreadful happened when trying to fetch paper.  Check your URL {url}".format(
@@ -153,3 +153,72 @@ class ImportCitations(forms.Form):
         thePaperObject.year = thePaperJSON["year"]
         thePaperObject.save()
         add_authors(thePaperObject, thePaperJSON["authors"])
+
+class ImportAuthor(forms.Form):
+    ss_author_id = forms.CharField(help_text="Enter Semantic Scholar Author ID")
+
+    def clean(self):
+        super().clean()
+        ## on submit form clean, query SS and create the object if needed, saving the
+        ## raw json into a model field called Paper.raw_SS_json
+        id = self.cleaned_data["ss_author_id"]
+        semantic_API_url = "https://api.semanticscholar.org/graph/v1/author/"
+        # status_code = None
+        fields = ["name", "paperCount", "citationCount",
+                  "papers", "papers.title", "papers.abstract", "papers.referenceCount", "papers.citationCount",
+                  "papers.publicationTypes", "papers.year", "papers.journal", "papers.authors"]
+        URL = semantic_API_url + id + "?fields={fields}".format(
+            fields=",".join(fields))
+        print(URL)
+        try:
+            author = requests.get(URL)
+            if author.status_code == 200:
+                theAuthorJSON = author.json()
+            else:
+                raise ValidationError(
+                    "Got error code {code} from Semantic Scholar".format(code=paper_response_from_SS_API.status_code))
+        except:
+            raise ValidationError(
+                "something dreadful happened when trying to fetch author.  Check your URL {url}".format(
+                    url=URL))
+
+        theAuthorObject, created = Author.objects.get_or_create(SS_author_ID=theAuthorJSON["authorId"])
+        theAuthorObject.raw_SS_json = json.dumps(theAuthorJSON)
+        theAuthorObject.name = theAuthorJSON["name"]
+        theAuthorObject.papers_last_queried = datetime.datetime.now().astimezone()
+        theAuthorObject.save()
+
+        for paper in theAuthorJSON["papers"]:
+            thePaperObject, created = Paper.objects.get_or_create(SSID_paper_ID=paper['paperId'])
+            if not created:
+                pass
+            else:
+                thePaperObject.title = paper["title"]
+                try:
+                    thePaperObject.journal_name = paper["journal"]["name"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    thePaperObject.volume = paper["journal"]["volume"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    thePaperObject.issue = paper["journal"]["issue"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                try:
+                    thePaperObject.pages = paper["journal"]["pages"]
+                except KeyError:
+                    pass
+                except TypeError:
+                    pass
+                thePaperObject.year = paper["year"]
+                add_authors(thePaperObject, paper["authors"])
+                thePaperObject.save()
+

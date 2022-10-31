@@ -1,8 +1,8 @@
 from django.views.generic import ListView, DetailView, View
 from citation_networks.models import Paper, Author
 from django.views.generic.edit import FormView
-from citation_networks.forms import ImportCitations
-from django.http import HttpResponse
+from citation_networks.forms import ImportPaperCitations, ImportAuthor
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 
 
@@ -111,16 +111,37 @@ class PaperListView(ListView):
     queryset = Paper.objects.exclude(citations_last_queried__isnull=True).order_by("citations_last_queried").reverse()
     paginate_by = 30
 
-class ImportCitationsFormView(FormView):
-    template_name = 'citation_networks/import_citations.html'
-    form_class = ImportCitations
+class ImportPaperFormView(FormView):
+    template_name = 'citation_networks/import_paper.html'
+    form_class = ImportPaperCitations
     success_url = '/papers/'
 
     def form_valid(self, form):
         form.addCitationsRefs(form.cleaned_data["ssid"])
         return super().form_valid(form)
 
-class ImportCitationsFormViewFromPaperDetail(ImportCitationsFormView):
+    def render_to_response(self, context, **response_kwargs):
+        """ Allow AJAX requests to be handled more gracefully """
+        if self.request.is_ajax():
+            return JsonResponse({"status":"success"})
+        else:
+            return super(ImportPaperFormView, self).render_to_response(context, **response_kwargs)
+
+class ImportAuthorFormView(FormView):
+    template_name = 'citation_networks/import_author.html'
+    form_class = ImportAuthor
+
+    def form_valid(self, form):
+        ## need to do this to have access to form data in get_success_url
+        self.form = form
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        auth = Author.objects.get(SS_author_ID=self.form.cleaned_data["ss_author_id"])
+        return '/authors/' + str(auth.pk)
+
+
+class ImportCitationsFormViewFromPaperDetail(ImportPaperFormView):
     # note this is more complicated than a standard detail view, because it contains a hidden
     # form to query citations
 

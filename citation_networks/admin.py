@@ -7,7 +7,7 @@ class PaperAdmin(admin.ModelAdmin):
     search_fields = ["SSID_paper_ID", "title", "year","authors__name"]
 
 class AuthorAdmin(admin.ModelAdmin):
-    fields=["name", "SS_author_ID"]
+    fields=["name", "SS_author_ID", "papers_last_queried","raw_SS_json"]
     search_fields = ["SS_author_ID", "name"]
 
 class AuthorshipAdmin(admin.ModelAdmin):

@@ -1,0 +1,38 @@
+{% extends "citation_networks/base.html" %}
+
+{% block script_header %}
+
+    <style>
+
+        form {
+            margin: 10px
+        }
+        form label {
+            display: none;
+        }
+
+        input {
+            width: 100%;
+        }
+
+        .errorlist {
+            list-style:none;
+            background-color: #ff6666;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 card">
+        <form action="/import-paper/" method="post">
+         {% csrf_token %}
+        {{ form }}
+         <input type="submit" value="Import Citations for Paper">
+    </form>
+    </div>
+    </div>
+</div>
+{% endblock %}
