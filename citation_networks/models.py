@@ -5,6 +5,7 @@ class Author(models.Model):
     name = models.CharField(max_length=1000)
     raw_SS_json = models.TextField(null=True, blank=True)
     papers_last_queried = models.DateTimeField(null=True, blank=True)
+    exclude_from_analysis = models.BooleanField(null=True, default=False, blank=True)
 
     def __str__(self):
         try:
@@ -26,6 +27,7 @@ class Paper(models.Model):
     cited_by = models.ManyToManyField('Paper', blank=True, related_name="cites")
     citations_last_queried = models.DateTimeField(null=True, blank=True)
     raw_SS_json = models.TextField(null=True, blank=True)
+    exclude_from_analysis = models.BooleanField(null=True, default=False, blank=True)
 
     def __str__(self):
         try:
