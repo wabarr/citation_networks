@@ -68,7 +68,7 @@ class NetworkJSON(View):
             nodelabels.append(paper.__str__())
             nodetitles.append(paper.__str__())
             nodecolors.append("#D34E24")
-            nodeopacities.append(1)
+            #nodeopacities.append(1)
             nodesizes.append(100)
 
         for paper in QS:
@@ -79,7 +79,7 @@ class NetworkJSON(View):
                     nodelabels.append("")
                     nodetitles.append(reference.__str__())
                     nodecolors.append("#38726C")
-                    nodeopacities.append(0.6)
+                    #nodeopacities.append(0.6)
                     nodesizes.append(20)
                 links.append({"from": paper.id, "to": reference.id})
             for citation in paper.cited_by.all():
@@ -88,12 +88,12 @@ class NetworkJSON(View):
                     nodelabels.append("")
                     nodetitles.append(citation.__str__())
                     nodecolors.append("#38726C")
-                    nodeopacities.append(0.6)
+                    #nodeopacities.append(0.6)
                     nodesizes.append(20)
                 links.append({"from": citation.id, "to": paper.id})
         nodes=[]
-        for nid, col, op, size, lab, title in zip(nodeids, nodecolors, nodeopacities, nodesizes, nodelabels, nodetitles):
-            nodes.append({"id":nid, "title":title, "color":col, "opacity":op, "size":size, "label":lab})
+        for nid, col, size, lab, title in zip(nodeids, nodecolors, nodesizes, nodelabels, nodetitles):
+            nodes.append({"id":nid, "title":title, "color":col, "size":size, "label":lab})
 
         return JsonResponse({"nodes": nodes, "links": links})
 
