@@ -42,7 +42,12 @@
                     improvedLayout: false
                     },
                 nodes:{
-                    shape: 'dot'
+                    shape: 'dot',
+                    font: {
+                        color: '#D34E24',
+                        size: 20,
+                        background: 'white'
+                    },
                 },
                 interaction: {
                     navigationButtons: false,
@@ -55,13 +60,14 @@
                     barnesHut: {
                         gravitationalConstant: -5000
                     },
-                    minVelocity: 45,
+                    minVelocity: 10,
                     timestep: 0.4,
                     stabilization: {
                         enabled: false,
                 }
                 },
                 edges: {
+                    arrows: 'to',
                     color: 'grey'
 
                 }
@@ -82,9 +88,9 @@
             $("#restart").toggle();
             $("#freeze").show();
         });
-        network.on('stabilized', function(){
-            network.fit();
-            });
+        //network.on('stabilized', function(){
+        //    network.fit();
+        //    });
 
         network.on('click', function( params ) {
             window.location.href = ("/papers/" + params.nodes[0]);
