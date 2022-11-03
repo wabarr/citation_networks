@@ -1,4 +1,5 @@
 from django.db import models
+import json
 
 class Author(models.Model):
     SS_author_ID = models.PositiveBigIntegerField(unique=True)
@@ -28,6 +29,28 @@ class Paper(models.Model):
     citations_last_queried = models.DateTimeField(null=True, blank=True)
     raw_SS_json = models.TextField(null=True, blank=True)
     exclude_from_analysis = models.BooleanField(null=True, default=False, blank=True)
+
+    def check_ref_count(self):
+        try:
+            ss_data = json.loads(self.raw_SS_json)
+        except TypeError:
+            return None
+        refcount = len(self.references.all())
+        if ss_data["referenceCount"] == refcount:
+            return True
+        else:
+            return False
+
+    def check_cite_count(self):
+        try:
+            ss_data = json.loads(self.raw_SS_json)
+        except TypeError:
+            return None
+        citecount = len(self.cited_by.all())
+        if ss_data["citationCount"] == citecount:
+            return True
+        else:
+            return False
 
     def __str__(self):
         try:

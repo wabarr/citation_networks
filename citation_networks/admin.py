@@ -5,6 +5,7 @@ from citation_networks.models import Paper, Authorship, Author
 class PaperAdmin(admin.ModelAdmin):
     fields = ["SSID_paper_ID", "title", "year", "abstract", "journal_name", "volume", "issue", "pages", "cited_by", "citations_last_queried","raw_SS_json"]
     search_fields = ["SSID_paper_ID", "title", "year","authors__name"]
+    list_display = ["__str__", "check_cite_count", "check_ref_count"]
 
 class AuthorAdmin(admin.ModelAdmin):
     fields=["name", "SS_author_ID", "papers_last_queried","raw_SS_json"]
